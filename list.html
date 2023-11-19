@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="email=no">
+    <link rel="stylesheet" href="./css/index.css?1028" />
+    <title>好营养 源来有话说</title>
+    <meta name="description" content="从好原料到好营养，一起来聆听营养源头的自然之声">
+    <script>
+        function setFS() {
+            var html = document.querySelector('html');
+            var width = html.getBoundingClientRect().width;
+            html.style.fontSize = width / 1000 + 'px';
+        }
+        setFS();
+        window.addEventListener('resize', setFS);
+    </script>
+    <script>
+        (function (w, d, s, q, i) {
+            w[q] = w[q] || [];
+            var f = d.getElementsByTagName(s)[0], j = d.createElement(s);
+            j.async = true;
+            j.id = 'beacon-aplus';
+            j.src = 'https://d.alicdn.com/alilog/mlog/aplus/' + i + '.js';
+            f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'aplus_queue', '203467608');
+
+    </script>
+</head>
+
+<body>
+    <div class="wrap">
+        <header class="header">
+        </header>
+        <section class="winners" style="padding-bottom: 0;">
+            <div class="mask__title title7"></div>
+            <div class="winners__tab">
+                <div class="item"><span>10.21</span></div>
+                <div class="item"><span>10.22</span></div>
+                <div class="item"><span>10.23</span></div>
+                <div class="item"><span>10.24</span></div>
+                <div class="item"><span>10.25</span></div>
+            </div>
+            <div class="winners__content"></div>
+        </section>
+        <section class="footer"></section>
+    </div>
+
+    <script src="./js/jquery-3.7.0.min.js"></script>
+    <script src="./js/index.js"></script>
+
+    <script>
+
+        $(function () {
+            var basicSiteUrl = 'https://www.adtais.com';
+            var dateList = [21, 22, 23, 24, 25,];
+            var winnerObj = {};
+            var loaded = 0;
+            var winnersTab = $('.winners__tab .item');
+            var winnersContent = $('.winners__content');
+
+            function getName(nickname, realName) {
+                var n = /^听友\d{8,9}$|^\d{7}[a-z]{4}$/.test(nickname);
+                var r = /^\d{9}$/.test(realName);
+                if (!n || r) {
+                    return nickname;
+                } else {
+                    return realName;
+                }
+            }
+
+            function getPhone(phone) {
+                if (phone && phone.length === 11) {
+                    return String(phone).replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+                } else {
+                    return '';
+                }
+            }
+
+            dateList.forEach(function (item) {
+                post({
+                    url: basicSiteUrl + '/tais-boot/h5/site/prizeInfo',
+                    data: {
+                        timeCode: Date.now(),
+                        supplierId: 2,
+                        row: -1,
+                        searchDate: '2023-10-' + item,
+                    },
+                    callback: function (res) {
+                        loaded++;
+                        winnerObj[item] = res.result.list;
+                        if (loaded === dateList.length) {
+                            var html = '';
+                            dateList.forEach(function (item) {
+                                var list = winnerObj[item];
+                                if (list.length > 0) {
+                                    html += '<dl class="item fn-hide">';
+                                    html += '<dt>';
+                                    html += '<span>中奖用户</span>';
+                                    html += '<span>手机号码</span>';
+                                    html += '<span>奖品名称</span>';
+                                    html += '</dt>';
+                                    list.forEach(function (item) {
+                                        html += '<dd>';
+                                        // html += '<span>' + getName(item.nickname, item.realName) + '</span>';
+                                        html += '<span>' + item.nickname + '</span>';
+                                        html += '<span>' + getPhone(item.phone) + '</span>';
+                                        html += '<span>' + prizeInfo['id' + item.prizeId].prize + '</span>';
+                                        html += '</dd>';
+                                    });
+                                    html += '</dl>';
+                                } else {
+                                    html += '<div class="item no-data fn-hide">暂无数据</div>';
+                                }
+                            });
+                            $('.winners__content').html(html);
+                            winnersTab.eq(0).addClass('active');
+                            $('.item', winnersContent).eq(0).removeClass('fn-hide');
+                        }
+                    },
+                });
+            });
+
+            winnersTab.on('click', function () {
+                var index = $(this).index();
+                winnersTab.removeClass('active');
+                $(this).addClass('active');
+                $('.item', winnersContent).addClass('fn-hide');
+                $('.item', winnersContent).eq(index).removeClass('fn-hide');
+            });
+        });
+    </script>
+</body>
+
+</html>
